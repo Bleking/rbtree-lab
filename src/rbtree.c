@@ -4,15 +4,15 @@
 #include <stdlib.h>
 
 rbtree *new_rbtree(void) {
-  rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-  
-  node_t *nil_node = (node_t *)calloc(1, sizeof(node_t));
+	rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
+
+	node_t *nil_node = (node_t *)calloc(1, sizeof(node_t));
 
 	nil_node->color = RBTREE_BLACK;
 	p->nil = nil_node;
 	p->root = nil_node;
-  
-  return p;
+
+	return p;
 }
 
 void free_node(rbtree* tree, node_t* x) {
@@ -24,12 +24,11 @@ void free_node(rbtree* tree, node_t* x) {
 	// x = NULL;
 }
 
-void delete_rbtree(rbtree *tree) {
-  // TODO: reclaim the tree nodes's memory
-  if (tree->root != tree->nil)
+void delete_rbtree(rbtree* tree) {
+	if (tree->root != tree->nil)
 		free_node(tree, tree->root);
 	free(tree->nil);
-  free(tree);
+	free(tree);
 }
 
 void left_rotate(rbtree* tree, node_t* x) {
@@ -73,6 +72,43 @@ void right_rotate(rbtree* tree, node_t* x) {
 
 	y->right = x;
 	x->parent = y;
+}
+
+node_t* rbtree_find(const rbtree* tree, const key_t key) {
+	node_t* current = tree->root;
+
+	while (current != tree->nil) {
+		if (current->key == key)  // if (curr->key == key)
+			return current;
+
+		if (current->key < key)  // 값이 크면 오른쪽으로
+			current = current->right;
+		else  // 값이 작으면 왼쪽으로
+			current = current->left;
+	}
+	return NULL;
+}
+node_t* rbtree_min(const rbtree* tree) {
+	if (tree->root == tree->nil)
+		return NULL;
+
+	node_t* curr = tree->root;
+
+	while (curr->left != tree->nil)
+		curr = curr->left;
+
+	return curr;
+}
+node_t* rbtree_max(const rbtree* tree) {
+	if (tree->root == tree->nil)
+		return NULL;
+
+	node_t* curr = tree->root;
+
+	while (curr->right != tree->nil)
+		curr = curr->right;
+
+	return curr;
 }
 
 void rbtree_insert_fixup(rbtree* tree, node_t* z) {
@@ -125,8 +161,8 @@ void rbtree_insert_fixup(rbtree* tree, node_t* z) {
 	}
 	tree->root->color = RBTREE_BLACK;
 }
-node_t *rbtree_insert(rbtree *tree, const key_t key) {
-  node_t *z = (node_t *)calloc(1, sizeof(node_t));
+node_t *rbtree_insert(rbtree* tree, const key_t key) {
+	node_t *z = (node_t *)calloc(1, sizeof(node_t));
 
 	node_t *y = tree->nil;
 	node_t *x = tree->root;
@@ -155,49 +191,6 @@ node_t *rbtree_insert(rbtree *tree, const key_t key) {
 	rbtree_insert_fixup(tree, z);
 
 	return z;
-  // return t->root;
-}
-
-node_t *rbtree_find(const rbtree *tree, const key_t key) {
-  node_t* current = tree->root;
-
-	while (current != tree->nil) {
-		if (current->key == key)  // if (curr->key == key)
-			return current;
-
-		if (current->key < key)  // 값이 크면 오른쪽으로
-			current = current->right;
-		else  // 값이 작으면 왼쪽으로
-			current = current->left;
-	}
-	return NULL;
-  // return t->root;
-}
-
-node_t *rbtree_min(const rbtree *tree) {
-  if (tree->root == tree->nil)
-		return NULL;
-
-	node_t* curr = tree->root;
-
-	while (curr->left != tree->nil)
-		curr = curr->left;
-
-	return curr;
-  // return t->root;
-}
-
-node_t *rbtree_max(const rbtree *tree) {
-  if (tree->root == tree->nil)
-		return NULL;
-
-	node_t* curr = tree->root;
-
-	while (curr->right != tree->nil)
-		curr = curr->right;
-
-	return curr;
-  // return t->root;
 }
 
 void rbtree_transplant(rbtree *tree, node_t *u, node_t *v) {
@@ -278,7 +271,7 @@ void rbtree_remove_fixup(rbtree* tree, node_t* x) {
 	}
 	x->color = RBTREE_BLACK;
 }
-int rbtree_remove(rbtree* tree, node_t* z) {
+int rbtree_erase(rbtree* tree, node_t* z) {
 	node_t* y;
 	node_t* x;
 	color_t y_original_color;
@@ -335,11 +328,11 @@ void subtree_to_array(const rbtree *tree, node_t *curr, key_t *arr, size_t n, si
 	subtree_to_array(tree, curr->right, arr, n, count);
 }
 int rbtree_to_array(const rbtree *tree, key_t *arr, const size_t n) {
-  if (tree->root == tree->nil)
+	if (tree->root == tree->nil)
 		return 0;
 
 	size_t count = 0;
 	subtree_to_array(tree, tree->root, arr, n, &count);
-  
-  return 0;
+
+	return 0;
 }
